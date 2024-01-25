@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const { validateSignUp, validateSignIn } = require("./validation");
-const { User } = require("../db");
+const { User, Account } = require("../db");
 const { createHash, validatePassword } = require("../hashing");
 const { JWT_SECRET } = require("../config");
 const jwt = require("jsonwebtoken");
@@ -30,8 +30,13 @@ router.post("/signup", validateSignUp, async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
     });
-
     const userId = user._id;
+
+    // balance = Math.floor(Math.random() * 100000);
+    await Account.create({
+      userId,
+      balance: Math.floor(Math.random() * 100000),
+    });
 
     const token = jwt.sign(
       {
@@ -161,16 +166,8 @@ router.get("/bulk", async (req, res) => {
   console.log(filter);
   const users = await User.find({
     $or: [
-      {
-        firstName: {
-          $regex: filter,
-        },
-      },
-      {
-        lastName: {
-          $regex: filter,
-        },
-      },
+      { firstName: { $regex: new RegExp(filter, "i") } },
+      { lastName: { $regex: new RegExp(filter, "i") } },
     ],
   });
   console.log(users);
@@ -182,6 +179,10 @@ router.get("/bulk", async (req, res) => {
       _id: user._id,
     })),
   });
+});
+
+router.post("/delete", async (req, res) => {
+  await User.deleteMany({});
 });
 
 module.exports = router;
