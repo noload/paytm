@@ -113,6 +113,26 @@ router.get("/users", async (req, res) => {
   }
 });
 
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const user = await User.findOne({
+      _id: req.params.userId,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Fetched user successfully",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+      data: {},
+    });
+  }
+});
+
 router.put("/user/:userId", authMiddleware, async (req, res) => {
   const updateBody = zod.object({
     password: zod.string().min(8).optional(),

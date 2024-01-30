@@ -3,7 +3,8 @@ import "./app.css";
 import Signup from "./component/Signup";
 import Signin from "./component/Signin";
 import Dashboard from "./component/Dashboard";
-import SendMoney from "./component/SendMoney";
+import { SendMoney } from "./component/SendMoney";
+
 function App() {
   return (
     <>
